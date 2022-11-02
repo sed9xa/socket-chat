@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js "></script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        margin: 40px;
+        padding: 20px;
+        height: 90vh;
+        display: grid;
+        grid-template-rows: 1fr 8fr 1fr;
+        align-items: center;
+        box-shadow: lightgrey 0px 0px 4px;
+      }
+      .title {
+      }
+      .messages {
+        border: 2px solid black;
+        height: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow-y: scroll;
+      }
+      .message {
+        overflow-wrap: break-word;
+        width: 40%;
+        padding: 10px;
+        font-size: 19px;
+        background-color: lightblue;
+        border-radius: 8px;
+      }
+      .input-form {
+        display: flex;
+        gap: 10px;
+      }
+      .input {
+        flex: 9;
+        border-radius: 8px;
+        border: black 2px solid;
+        padding: 10px;
+        font-size: 20px;
+      }
+      .button {
+        flex: 2;
+        border-radius: 8px;
+        border: black 2px solid;
+        padding: 10px;
+        font-size: 20px;
+        width: auto;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Chat</h1>
+
+      <div class="messages"></div>
+      <form action="" class="input-form">
+        <input type="text" placeholder="message" class="input" />
+        <button class="button">Send message</button>
+      </form>
+    </div>
+
+    <script>
+      let input = document.querySelector(".input");
+      let button = document.querySelector(".button");
+
+      const socket = io("http://localhost:3001");
+      socket.on("connection");
+
+      socket.on("message", (messageData) => {
+        let newMessage = document.createElement("p");
+        newMessage.className = "message";
+        newMessage.innerHTML = messageData.message;
+        if (messageData.id === socket.id) {
+          newMessage.style.backgroundColor = "lightgreen";
+        }
+        else{
+          newMessage.style.marginLeft = 'auto';
+        }
+        document.querySelector(".messages").appendChild(newMessage);
+      });
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        let newMessage = input.value;
+        let messageData = {
+          message: newMessage,
+          id: socket.id,
+        };
+        socket.emit("message", messageData);
+      });
+    </script>
+  </body>
+</html>
